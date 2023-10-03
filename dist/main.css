@@ -3,8 +3,11 @@ html,
 body {
     box-sizing: border-box;
     color: white;
-    overflow: hidden;
+    /* overflow: hidden; */
+    /* pointer-events: none; */
 }
+
+
 
 .webgl {
     position: fixed;
@@ -12,18 +15,31 @@ body {
     left: 0;
     outline: none;
     z-index: -1;
+    /* pointer-events: all; */
+}
+
+.trig02 {
+    height: 200vh;
+}
+
+.trig03 {
+    height: 600vh;
 }
 
 html {
-    overflow: hidden;
+    /* overflow: hidden; */
     width: 100%;
 }
 
+.lil-gui {
+    display: none !important;
+}
+
 body {
-    height: 100%;
+    /* height: 100%;
     position: fixed;
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
+    overflow-y: scroll; */
+    /* -webkit-overflow-scrolling: touch; */
 }
 
 /* Global */
@@ -71,7 +87,7 @@ p {
 /*Loader*/
 
 .loader {
-    background-color: black;
+    background-color: #02040c;
     width: 100%;
     height: 100vh;
     position: fixed;
@@ -82,6 +98,9 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    flex-direction: column;
+
 }
 
 .loader.slide-up {
@@ -94,13 +113,25 @@ p {
     flex-wrap: nowrap;
     justify-content: center;
     text-align: center;
+    position: relative;
+
 }
 
-.counter .digit {
+.counter .digit,
+.percent {
     height: 160px;
-    width: 110px;
+    width: 60px;
     line-height: 160px;
     font-size: 90px;
+    text-align: center;
+}
+
+.counter-hidden {
+    position: absolute;
+    top: -170px;
+    width: 400px;
+    height: 100px;
+    background-color: #02040c;
 }
 
 .counter[data-type="simple-digits"] .digit {
@@ -122,7 +153,7 @@ p {
 
 .counter[data-type="simple-digits"] .digit.flip::before,
 .counter[data-type="simple-digits"] .digit.flip span {
-    animation: slideUp 1s cubic-bezier(0.77, 0, 0.175, 1);
+    animation: slideUp .75s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 /* Animations */
@@ -136,6 +167,46 @@ p {
     to {
         top: auto;
     }
+}
+
+.loader-text {
+    position: absolute;
+    bottom: 120px;
+    opacity: 0.6;
+    /* animation: blink 4s infinite; */
+}
+
+.loader-text-hidden-box {
+    width: 300px;
+    height: 50px;
+    background-color: #02040c;
+    position: absolute;
+    bottom: 9%;
+
+}
+
+.loader-background {
+    position: absolute;
+    height: 400px;
+    object-fit: cover;
+    z-index: 1;
+
+
+}
+
+@keyframes blink {
+    0% {
+        opacity: .6;
+    }
+
+    50% {
+        opacity: .9;
+    }
+
+    100% {
+        opacity: .6;
+    }
+
 }
 
 /* Header */
@@ -163,7 +234,6 @@ header {
     height: 34px;
     cursor: pointer;
     opacity: 0;
-    animation: fadein 1s ease-in-out 1s forwards;
 }
 
 @keyframes fadein {
@@ -192,7 +262,7 @@ a {
     text-decoration: none;
     transition: 0.2s color ease-in-out;
     opacity: 0;
-    animation: fadein 1s ease-in-out 1s forwards;
+    /* animation: fadein 1s ease-in-out 1s forwards; */
 }
 
 a:hover {
@@ -204,8 +274,9 @@ a:hover {
     cursor: pointer;
     transition: color 0.2s ease-in-out;
     opacity: 0;
-    animation: fadein 1s ease-in-out 1s forwards;
+
 }
+
 
 .about-link:hover {
     color: #bcbdd2;
@@ -274,7 +345,7 @@ a:hover {
     font-style: normal;
     margin-top: 30px;
     opacity: 0;
-    animation: fadein .5s ease-in-out 1.4s forwards;
+
 }
 
 .hero-title {
@@ -291,13 +362,13 @@ a:hover {
 .hero-title span {
     display: block;
     transform: translate(0, 100%);
-    animation: reveal 1.5s cubic-bezier(0.77, 0, 0.175, 1) 0.5s forwards;
+
 }
 
-.hero-title-second>span {
+/* .hero-title-second>span {
     animation-delay: .6s;
 
-}
+} */
 
 .hero-title-second {
     margin-bottom: 30px;
@@ -325,7 +396,7 @@ a:hover {
 
 }
 
-.hero-sub-1 {
+/* .hero-sub-1 {
 
     animation: reveal 1s cubic-bezier(0.77, 0, 0.175, 1) .9s forwards;
 }
@@ -337,7 +408,7 @@ a:hover {
 
 .hero-sub-3 {
     animation: reveal 1s cubic-bezier(0.77, 0, 0.175, 1) 1.1s forwards;
-}
+} */
 
 
 .logo-overlay {
@@ -348,7 +419,7 @@ a:hover {
     width: 100%;
     object-fit: cover;
     user-select: none;
-    animation: overlayfadein 3s ease 1s forwards;
+    /* animation: overlayfadein 3s ease 1s forwards; */
     opacity: 0;
 }
 
@@ -423,12 +494,12 @@ a:hover {
     overflow: hidden;
     position: relative;
     opacity: 0;
-    animation: fadeinslideup .5s ease-in-out forwards;
+    /* animation: fadeinslideup .5s ease-in-out forwards; */
 }
 
 
 
-.card-1 {
+/* .card-1 {
     animation-delay: 1.8s;
 }
 
@@ -438,7 +509,7 @@ a:hover {
 
 .card-3 {
     animation-delay: 1.9s;
-}
+} */
 
 
 
@@ -813,7 +884,6 @@ a:hover {
 .about-shown {
     opacity: 1;
     pointer-events: all;
-
 }
 
 /* @keyframes reveal {
