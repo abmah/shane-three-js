@@ -8,6 +8,9 @@ body {
     color: white;
     /* overflow: hidden; */
     /* pointer-events: none; */
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 }
 
 
@@ -306,6 +309,25 @@ a:hover {
     display: none;
     transition: transform .6s cubic-bezier(1, .11, .58, .91);
     transform: translateX(-100%);
+}
+
+/* page transition */
+
+.test-content {
+    overflow-x: hidden;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+
+.test-content>h1 {
+    opacity: .05;
+}
+
+.page-transition-one {
+    width: 100vw;
+    height: 1400px;
+    background-color: #02040c;
 }
 
 

@@ -8,10 +8,14 @@ import firefliesVertexShader from './shaders/fireflies/vertex.glsl'
 import firefliesFragmentShader from './shaders/fireflies/fragment.glsl'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { getProject, types } from '@theatre/core'
+import { getProject, types, val } from '@theatre/core'
 import studio from '@theatre/studio'
-import projectState from './animation.json'
+import projectState from './animation03.json'
+import Lenis from '@studio-freight/lenis'
+import { lerp } from 'three/src/math/MathUtils'
 
+
+const lenis = new Lenis({ lerp: .1 })
 
 
 
@@ -66,6 +70,8 @@ const loadingManager = new THREE.LoadingManager(
 
 // Texture loader
 const textureLoader = new THREE.TextureLoader(loadingManager)
+
+const cubeTextureLoader = new THREE.CubeTextureLoader(loadingManager)
 
 // Draco loader
 const dracoLoader = new DRACOLoader(loadingManager)
@@ -128,42 +134,56 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 
-
 /**
  * Textures
  */
-const bakedTexture = textureLoader.load('1.jpg')
-
-bakedTexture.flipY = false
-
-const bakedTexture2 = textureLoader.load('2.jpg')
-
-bakedTexture2.flipY = false
+const environmentMapTexture = cubeTextureLoader.load([
+    '/environmentMaps/0/px.jpg',
+    '/environmentMaps/0/nx.jpg',
+    '/environmentMaps/0/py.jpg',
+    '/environmentMaps/0/ny.jpg',
+    '/environmentMaps/0/pz.jpg',
+    '/environmentMaps/0/nz.jpg'
+])
 
 /**
  * Materials
  */
-// Baked material
-const bakedMaterial = new THREE.MeshBasicMaterial({ map: bakedTexture })
 
-const bakedMaterial2 = new THREE.MeshBasicMaterial({ map: bakedTexture2 })
+const material = new THREE.MeshStandardMaterial()
+material.metalness = 0.7
+material.roughness = 0.2
+
+material.envMap = environmentMapTexture
+
+
+const transparentMaterial = new THREE.MeshStandardMaterial()
+transparentMaterial.metalness = 0.9
+transparentMaterial.roughness = 0.1
+transparentMaterial.envMap = environmentMapTexture
+
+
+
 
 /**
  * Model
  */
 gltfLoader.load(
-    'new1.glb',
+    'testModelnew.glb',
     (gltf) => {
         gltf.scene.scale.set(0.1, 0.1, 0.1)
         scene.add(gltf.scene)
 
-        // gltf.scene.traverse((child) => {
-        //     if (child instanceof THREE.Mesh && child.name.startsWith('Cube')) {
-        //         child.material = bakedMaterial
-        //     } else {
-        //         child.material = bakedMaterial2
-        //     }
-        // })
+        gltf.scene.traverse((child) => {
+            if (child instanceof THREE.Mesh && child.name.startsWith('Cube')) {
+                child.material = material
+
+            } else {
+                if (child.name.startsWith('transparent')) {
+                    child.material = transparentMaterial
+                }
+            }
+        })
     }
 )
 
@@ -181,17 +201,35 @@ scene.add(directionalLight)
 /**
  * Fog
  */
-
-
-
+const fog = new THREE.Fog('#ffffff', 1, 35)
+scene.fog = fog
 
 
 /**
  * Fireflies
  */
 
-let alphaBitcoinTexture = textureLoader.load('33.png')
+let alphaBitTexture = textureLoader.load('bitcoin-logo.png')
+let alphaEthTexture = textureLoader.load('eth.png')
+let alphaThetherTexture = textureLoader.load('tether.png')
+let alphaBNBTexture = textureLoader.load('bnb.png')
 let firefliesCount = 200;
+
+
+let alphaTextures = [
+    alphaBitTexture,
+    alphaEthTexture,
+    alphaThetherTexture,
+    alphaBNBTexture
+];
+
+function getRandomAlphaTexture() {
+    // Generate a random index within the range of the alphaTextures array
+    let randomIndex = Math.floor(Math.random() * alphaTextures.length);
+
+    // Return the randomly selected alpha texture
+    return alphaTextures[randomIndex];
+}
 
 
 const firefliesGeometry = new THREE.BufferGeometry();
@@ -200,6 +238,7 @@ const firefliesGeometry = new THREE.BufferGeometry();
 function setFirefliesPositionsAndScales() {
     const positionArray = new Float32Array(firefliesCount * 3);
     const scaleArray = new Float32Array(firefliesCount);
+    const alphaTextureArray = new Array(firefliesCount);
 
     for (let i = 0; i < firefliesCount; i++) {
         positionArray[i * 3 + 0] = (Math.random() - 0.5) * 4;
@@ -207,6 +246,7 @@ function setFirefliesPositionsAndScales() {
         positionArray[i * 3 + 2] = (Math.random() - 0.5) * 4;
 
         scaleArray[i] = Math.random();
+        alphaTextureArray[i] = getRandomAlphaTexture();
     }
 
     firefliesGeometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
@@ -225,7 +265,7 @@ const firefliesMaterial = new THREE.ShaderMaterial({
         uSize: { value: 45 },
         uColor: { value: new THREE.Color('#474747') },
         uSpeed: { value: 0.03 },
-        uAlphaTexture: { value: alphaBitcoinTexture }
+        uAlphaTexture: { value: alphaTextures[1] }
     },
     vertexShader: firefliesVertexShader,
     fragmentShader: firefliesFragmentShader,
@@ -235,12 +275,10 @@ const firefliesMaterial = new THREE.ShaderMaterial({
     vertexColors: true
 })
 
-
 gui.add({ count: firefliesCount }, 'count', 1, 5000).step(1).name('firefliesCount').onChange((value) => {
     firefliesCount = value;
     setFirefliesPositionsAndScales();
 });
-
 
 const fireflies = new THREE.Points(firefliesGeometry, firefliesMaterial)
 fireflies.position.set(0.23, 0, .5)
@@ -251,6 +289,10 @@ gui.add(firefliesMaterial.uniforms.uSpeed, 'value').min(0).max(0.1).step(0.001).
 
 
 scene.add(fireflies)
+
+// temporary funcitons 
+
+
 
 
 /**
@@ -297,9 +339,9 @@ cameraGroup.position.y = .5
 
 scene.add(cameraGroup)
 
-gui.add(camera.position, 'x').min(- 10).max(10).step(0.001).name('cameraX')
-gui.add(camera.position, 'y').min(- 10).max(10).step(0.001).name('cameraY')
-gui.add(camera.position, 'z').min(- 10).max(10).step(0.001).name('cameraZ')
+gui.add(camera.position, 'x').min(- 100).max(100).step(0.001).name('cameraX')
+gui.add(camera.position, 'y').min(- 100).max(100).step(0.001).name('cameraY')
+gui.add(camera.position, 'z').min(- 100).max(100).step(0.001).name('cameraZ')
 
 gui.add(camera.rotation, 'x').min(- Math.PI).max(Math.PI).step(0.001).name('cameraRotationX')
 gui.add(camera.rotation, 'y').min(- Math.PI).max(Math.PI).step(0.001).name('cameraRotationY')
@@ -320,7 +362,6 @@ const renderer = new THREE.WebGLRenderer({
 renderer.outputEncoding = THREE.sRGBEncoding
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
 debugObject.clearColor = '#201919'
 renderer.setClearColor(debugObject.clearColor)
 
@@ -334,9 +375,16 @@ renderer.setClearColor(debugObject.clearColor)
 // create project 
 const project = getProject('Shane project 2', { state: projectState })
 const sheet = project.sheet('Animated scene')
-
+const sequenceLength = val(sheet.sequence.pointer.length);
 window.addEventListener('click', () => {
-    sheet.sequence.play({ iterationCount: once })
+    console.log(sheet)
+    console.log(sequenceLength)
+    sheet.sequence.play({ iterationCount: Infinity })
+})
+
+window.addEventListener('dblclick', () => {
+
+    sheet.sequence.position = 0
 })
 
 const cameraObject = sheet.object('Camera', {
@@ -361,6 +409,23 @@ cameraObject.onValuesChange((values) => {
 
 
 // console.log(projectState)
+let scrollPercentage = 0
+let transitionOne = document.getElementById('transition-one')
+function logScrollPercentage() {
+    // Calculate the scroll percentage
+    const scrollPosition = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.body.scrollHeight;
+    scrollPercentage = scrollPosition / (documentHeight - windowHeight);
+
+    // Log the scroll percentage
+    // console.log(`Scroll Percentage: ${scrollPercentage.toFixed(4)}`);
+    sheet.sequence.position = scrollPercentage * sequenceLength;
+
+}
+
+// Attach the function to the scroll event
+window.addEventListener('scroll', logScrollPercentage);
 
 
 
@@ -369,8 +434,14 @@ cameraObject.onValuesChange((values) => {
  */
 const clock = new THREE.Clock()
 
-const tick = () => {
+const tick = (time) => {
+
+
     const elapsedTime = clock.getElapsedTime()
+
+    lenis.raf(time)
+
+    console
 
     // Update materials
     firefliesMaterial.uniforms.uTime.value = elapsedTime
