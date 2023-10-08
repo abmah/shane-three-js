@@ -36,7 +36,7 @@
     </div>
 
 
-    <div class="header-wrapper" style="display: none;">
+    <div class="header-wrapper">
         <header>
             <div class="logo">
                 <img src="images/logo.svg" alt="Revive Finance">
@@ -150,7 +150,7 @@
                     <h1>"Transparent Triumph"</h1>
                     <p>
                         Revive Finance champions a paradigm shift, where proven governance and verifiable compliance
-                        become the bedrock for a transparent and successful crypto finance future.
+                        become the bedrock for a transparent and successful future.
                     </p>
                 </div>
             </div>
@@ -174,6 +174,28 @@
             </div>
         </div>
 
+        <div class="flash-cards ">
+
+            <h2 class="flash-card-1">
+
+                We are committed to<strong> unwavering integrity </strong> and <strong>ethical
+                    decision-making </strong>in all aspects of our
+                business.
+            </h2>
+            <h2 class="flash-card-2">
+                We believe that <strong>competent leadership </strong>and <strong>clear-cut accountability </strong>are
+                essential for every leader.
+            </h2>
+            <h2 class="flash-card-3">
+                It is our belief that
+                <strong> proven governance </strong>and
+                <strong> verifiable compliance</strong> are
+                critical to the success of
+                our business.
+            </h2>
+        </div>
+
+
         <h1>hello world</h1>
         <h1>hello world</h1>
         <h1>hello world</h1>
@@ -206,7 +228,7 @@
 
     </div>
 
-    <div class="content-wrapper" style="display: none;">
+    <div class="content-wrapper">
 
 
         <div class="landing-page-container">
@@ -245,7 +267,7 @@
 
         <!-- <div class="bottom-blur"></div> -->
 
-        <div class="marquee-container">
+        <div class="marquee-container" style="display: none;">
             <img src="images/REVIVE.svg" class="logo-overlay" alt="overlay">
         </div>
 
@@ -253,7 +275,7 @@
 
 
 
-        <div class="cards-wrapper">
+        <div class="cards-wrapper" style="display: none;">
 
             <div class="card  card-1">
                 <div class="card-border"></div>
@@ -368,19 +390,22 @@
 
 
         <div class="email-container hidden">
-            <div class="email-input-success">
+            <div class="email-input-success" style="display: none;">
                 <img src='images/x.svg' alt='x' onclick='hideEmailInput()' class='x-icon'>
                 <p class='email-submit-message'>Thanks. We will be in touch as soon as our product is ready for beta
                     testing.</p>
             </div>
-            <img src="images/x.svg" alt="x" onclick="hideEmailInput()" class="x-icon">
-            <p class="email-input-header">Enter your email below to join our waitlist and be one of the first to gain
-                access to our mobile app beta program.</p>
-            <input id="email-input" class="email-input" placeholder="Enter Your Email" type="text">
-            <div class="message-container">
-                <p class="message"></p>
+            <div class="inital-email-submit-input">
+                <img src="images/x.svg" alt="x" onclick="hideEmailInput()" class="x-icon">
+                <p class="email-input-header">Enter your email below to join our waitlist and be one of the first to
+                    gain
+                    access to our mobile app beta program.</p>
+                <input id="email-input" class="email-input" placeholder="Enter Your Email" type="text">
+                <div class="message-container">
+                    <p class="message"></p>
+                </div>
+                <button onclick="sendEmail()" class="sub-btn btn">Submit</button>
             </div>
-            <button onclick="sendEmail()" class="sub-btn btn">Submit</button>
         </div>
 
 
@@ -394,7 +419,8 @@
 
 
 
-
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js">
+    </script>
 </body>
 
 </html>

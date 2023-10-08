@@ -3,6 +3,8 @@ const emailInput = document.getElementById("email-input");
 const messageContainer = document.querySelector(".message");
 const emailContainer = document.querySelector(".email-container");
 let aboutcard = document.querySelector('.about-card');
+const successMessage = document.querySelector(".email-input-success");
+let initalEmailInput = document.querySelector('.inital-email-submit-input')
 
 
 // Toggle menu button actions
@@ -84,10 +86,11 @@ function sendEmail() {
 
   emailjs.send('service_thj6cx5', 'template_9rcg8sk', templateParams)
     .then(function (response) {
+      successMessage.style.display = "block";
       messageContainer.innerHTML = 'Email sent successfully';
       console.log('SUCCESS!', response.status, response.text);
       emailInput.value = "";
-      emailContainer.innerHTML = "";
+      initalEmailInput.style.display = "none";
       setTimeout(() => {
         emailContainer.classList.add('hidden');
       }, 3000);

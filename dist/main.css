@@ -21,13 +21,6 @@ body {
     /* pointer-events: all; */
 }
 
-.trig02 {
-    height: 200vh;
-}
-
-.trig03 {
-    height: 600vh;
-}
 
 html {
     /* overflow: hidden; */
@@ -38,12 +31,13 @@ html {
     display: none !important;
 }
 
-body {
-    /* height: 100%;
+/* body {
+    height: 100%;
     position: fixed;
-    overflow-y: scroll; */
-    /* -webkit-overflow-scrolling: touch; */
-}
+    overflow-y: scroll; 
+    -webkit-overflow-scrolling: touch;
+} 
+*/
 
 html.lenis {
     height: auto;
@@ -329,6 +323,13 @@ a:hover {
 }
 
 /* page transition */
+.trig02 {
+    height: 2000px;
+}
+
+.trig03 {
+    height: 6000px;
+}
 
 .test-content {
     overflow-x: hidden;
@@ -337,13 +338,18 @@ a:hover {
     padding: 0;
 }
 
+.test-content>h1 {
+    opacity: .1;
+    user-select: none;
+    pointer-events: none;
+}
 
 .text-animation {
     height: 2000px;
 }
 
 .to-be-animated {
-    height: 434px;
+    height: 370px;
     width: 770px;
     position: fixed;
     bottom: 5%;
@@ -373,11 +379,12 @@ a:hover {
 .first-card {
     -webkit-mask-image: linear-gradient(270deg, black 70%, transparent 70%);
     mask-image: linear-gradient(270deg, black 70%, transparent 70%);
+    width: 95%;
 }
 
 .page-transition-one {
     width: 110vw;
-    height: 3000px;
+    height: 4000px;
     background-color: #02040c;
     box-shadow: 1px -20px 200px 400px #02040c;
     transform: rotate(3deg);
@@ -398,15 +405,52 @@ a:hover {
 }
 
 .text-animation-container>div {
-    width: 300px;
-
+    width: 481px;
     border-radius: 10px;
-    /* opacity: 0; */
-    /* mask-image: linear-gradient(270deg, black 120%, transparent 120%); */
-    font-size: 30px;
+    font-size: 38px;
     font-weight: 400;
+    color: #ffffff;
 
 }
+
+
+
+@media (max-width: 1168px) {
+
+    .to-be-animated {
+        height: 280px;
+        width: 545px;
+
+    }
+
+    .to-be-animated>div h1 {
+        font-size: 25px;
+    }
+
+
+}
+
+@media (max-width: 768px) {
+
+    .to-be-animated {
+        height: 280px;
+        width: 265px;
+
+    }
+
+    .to-be-animated>div h1 {
+        font-size: 20px;
+    }
+
+    .text-animation-container>div {
+        width: 354px;
+        font-size: 28px;
+    }
+
+}
+
+
+
 
 
 

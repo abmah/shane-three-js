@@ -466,7 +466,7 @@ tl.to('.third-card', {
 
 tl.to('.to-be-animated', {
     opacity: 0,
-    transform: "perspective(500px) translate3d(200px,200px, 200px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)",
+    transform: "perspective(250px) translate3d(200px,200px, 200px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)",
     pointerEvents: 'none',
     duration: 1.2,
 });
@@ -487,7 +487,7 @@ let pageTransitionTimeline = gsap.timeline()
 
 pageTransitionTimeline.to('.page-transition-one', {
     opacity: 1,
-    boxShadow: "0px -500px 1000px 300px #02040c",
+    boxShadow: "0px -500px 1000px 400px #02040c",
 
 })
 
@@ -538,6 +538,123 @@ ScrollTrigger.create({
     scrub: true,
     // markers: true
 })
+
+// flash cards animation
+const flashTl = new gsap.timeline()
+flashTl.from(
+    '.flash-card-1', {
+    userSelect: 'none',
+    cssText: '    -webkit-mask-image: linear-gradient(90deg, black -100%, transparent 0%); mask-image: linear-gradient(90deg, black -100%, transparent 0%)'
+}
+)
+flashTl.from(
+    '.flash-card-2', {
+    userSelect: 'none',
+    cssText: '    -webkit-mask-image: linear-gradient(90deg, black -100%, transparent 0%); mask-image: linear-gradient(90deg, black -100%, transparent 0%)'
+}
+)
+flashTl.from(
+    '.flash-card-3', {
+    userSelect: 'none',
+    cssText: '    -webkit-mask-image: linear-gradient(90deg, black -100%, transparent 0%); mask-image: linear-gradient(90deg, black -100%, transparent 0%)'
+}
+)
+flashTl.to('.flash-card-1', {
+    cssText: '-webkit-mask-image: linear-gradient(90deg, black 100%, transparent 200%); mask-image: linear-gradient(90deg, black -100%, transparent 0%);'
+})
+
+flashTl.to('.flash-card-2', {
+    cssText: '-webkit-mask-image: linear-gradient(90deg, black 100%, transparent 200%); mask-image: linear-gradient(90deg, black -100%, transparent 0%);'
+})
+flashTl.to('.flash-card-3', {
+    cssText: '-webkit-mask-image: linear-gradient(90deg, black 100%, transparent 200%); mask-image: linear-gradient(90deg, black -100%, transparent 0%);'
+})
+
+flashTl.to(
+    '.flash-card-1', {
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black 100%, transparent 200%); mask-image: linear-gradient(270deg, black -100%, transparent 0%);'
+}
+)
+flashTl.to(
+    '.flash-card-2', {
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black 100%, transparent 200%); mask-image: linear-gradient(270deg, black -100%, transparent 0%);'
+}
+)
+
+flashTl.to(
+    '.flash-card-3', {
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black 100%, transparent 200%); mask-image: linear-gradient(270deg, black -100%, transparent 0%);'
+}
+)
+flashTl.to(
+    '.flash-card-1', {
+    userSelect: 'none',
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);'
+}
+)
+flashTl.to(
+    '.flash-card-1', {
+    userSelect: 'none',
+
+}
+)
+flashTl.to(
+    '.flash-card-2', {
+    userSelect: 'none',
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);'
+}
+)
+flashTl.to(
+    '.flash-card-2', {
+    userSelect: 'none',
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);'
+}
+)
+flashTl.to(
+    '.flash-card-3', {
+    userSelect: 'none',
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);'
+}
+)
+
+
+
+ScrollTrigger.create({
+    animation: flashTl,
+    trigger: '.text-animation-trigger',
+    start: '+=1000', // Adjusted start value to move 2000 pixels above the trigger
+    end: '+=5000',
+    scrub: true,
+})
+
+
+// landing page hide out 
+gsap.set('.landing-page-container', {
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black 100%, transparent 200%); mask-image: linear-gradient(270deg, black -100%, transparent 0%);'
+})
+const landingPageTl = gsap.timeline()
+
+landingPageTl.to('.landing-page-container', {
+    userSelect: 'none',
+    pointerEvents: 'none',
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);'
+})
+
+landingPageTl.to('.content-wrapper', {
+    pointerEvents: 'none',
+})
+
+
+ScrollTrigger.create({
+    trigger: '.landing-page-container',
+    start: '+=3000',
+    end: '+=3000',
+    animation: landingPageTl,
+    // markers: true,
+    scrub: true,
+});
+
+
 
 
 lenis.on('scroll', (e) => {

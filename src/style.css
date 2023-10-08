@@ -83,7 +83,7 @@ p {
 .btn {
     border-radius: 121px;
     background: #0E121D;
-    box-shadow: -9px 7px 18px 7px rgba(0, 0, 0, 0.25);
+    box-shadow: 18px -3px 18px 7px rgba(0, 0, 0, 0.25);
     font-family: Frank Ruhl Libre;
     border: none;
     color: white;
@@ -327,11 +327,11 @@ a:hover {
 
 /* page transition */
 .trig02 {
-    height: 200vh;
+    height: 2000px;
 }
 
 .trig03 {
-    height: 600vh;
+    height: 6000px;
 }
 
 .test-content {
@@ -386,8 +386,8 @@ a:hover {
 }
 
 .page-transition-one {
-    width: 110vw;
-    height: 3000px;
+    width: 130vw;
+    height: 6500px;
     background-color: #02040c;
     box-shadow: 1px -20px 200px 400px #02040c;
     transform: rotate(3deg);
@@ -416,6 +416,70 @@ a:hover {
 
 }
 
+.flash-cards {
+    position: fixed;
+    opacity: 1;
+    display: flex;
+    justify-content: space-between;
+    width: 95%;
+    max-width: 1400px;
+    margin: 0 auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+}
+
+
+.flash-cards h2 {
+    width: 300px;
+    -webkit-mask-image: linear-gradient(90deg, black -100%, transparent 0%);
+    mask-image: linear-gradient(90deg, black -100%, transparent 0%)
+}
+
+
+@media (max-width: 1168px) {
+
+    .to-be-animated {
+        height: 280px;
+        width: 545px;
+
+    }
+
+    .to-be-animated>div h1 {
+        font-size: 25px;
+    }
+
+    .flash-cards {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .to-be-animated {
+        height: 280px;
+        width: 265px;
+
+    }
+
+    .to-be-animated>div h1 {
+        font-size: 20px;
+    }
+
+    .text-animation-container>div {
+        width: 354px;
+        font-size: 28px;
+    }
+
+}
+
+
+
+
 
 
 /* Main Section */
@@ -427,6 +491,7 @@ a:hover {
     top: 0;
     left: 0;
     overflow-y: scroll;
+
 }
 
 .pillars-background {
@@ -828,7 +893,7 @@ a:hover {
 
 .message {
     top: -20px;
-    right: -320px;
+    right: 15px;
     font-size: 12px;
     position: absolute;
 
