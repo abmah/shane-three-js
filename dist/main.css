@@ -1,7 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500&display=swap');
-
-
-
+@import url(https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500&display=swap);
 html,
 body {
     box-sizing: border-box;
@@ -24,6 +21,13 @@ body {
     /* pointer-events: all; */
 }
 
+.trig02 {
+    height: 200vh;
+}
+
+.trig03 {
+    height: 600vh;
+}
 
 html {
     /* overflow: hidden; */
@@ -34,13 +38,12 @@ html {
     display: none !important;
 }
 
-/* body {
-    height: 100%;
+body {
+    /* height: 100%;
     position: fixed;
-    overflow-y: scroll; 
-    -webkit-overflow-scrolling: touch;
-} 
-*/
+    overflow-y: scroll; */
+    /* -webkit-overflow-scrolling: touch; */
+}
 
 html.lenis {
     height: auto;
@@ -326,13 +329,6 @@ a:hover {
 }
 
 /* page transition */
-.trig02 {
-    height: 200vh;
-}
-
-.trig03 {
-    height: 600vh;
-}
 
 .test-content {
     overflow-x: hidden;
@@ -341,18 +337,13 @@ a:hover {
     padding: 0;
 }
 
-.test-content>h1 {
-    opacity: 0;
-    user-select: none;
-    pointer-events: none;
-}
 
 .text-animation {
     height: 2000px;
 }
 
 .to-be-animated {
-    height: 370px;
+    height: 434px;
     width: 770px;
     position: fixed;
     bottom: 5%;
@@ -382,7 +373,6 @@ a:hover {
 .first-card {
     -webkit-mask-image: linear-gradient(270deg, black 70%, transparent 70%);
     mask-image: linear-gradient(270deg, black 70%, transparent 70%);
-    width: 95%;
 }
 
 .page-transition-one {
@@ -408,11 +398,13 @@ a:hover {
 }
 
 .text-animation-container>div {
-    width: 481px;
+    width: 300px;
+
     border-radius: 10px;
-    font-size: 38px;
+    /* opacity: 0; */
+    /* mask-image: linear-gradient(270deg, black 120%, transparent 120%); */
+    font-size: 30px;
     font-weight: 400;
-    color: #ffffff;
 
 }
 
@@ -1183,3 +1175,5 @@ a:hover {
     }
 
 }
+
+/*# sourceMappingURL=main.css.map*/

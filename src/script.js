@@ -12,13 +12,6 @@ import { getProject, types, val } from '@theatre/core'
 import studio from '@theatre/studio'
 import projectState from './animation03.json'
 import Lenis from '@studio-freight/lenis'
-import { lerp } from 'three/src/math/MathUtils'
-
-
-const lenis = new Lenis({ lerp: .1 })
-
-
-
 
 
 /**
@@ -158,6 +151,7 @@ material.envMap = environmentMapTexture
 
 
 const transparentMaterial = new THREE.MeshStandardMaterial()
+// transparentMaterial.color = new THREE.Color('#f9d71c')
 transparentMaterial.metalness = 0.9
 transparentMaterial.roughness = 0.1
 transparentMaterial.envMap = environmentMapTexture
@@ -178,10 +172,12 @@ gltfLoader.load(
             if (child instanceof THREE.Mesh && child.name.startsWith('Cube')) {
                 child.material = material
 
+            } else if (child.name.startsWith('transparent')) {
+
+                child.material = transparentMaterial
+
             } else {
-                if (child.name.startsWith('transparent')) {
-                    child.material = transparentMaterial
-                }
+                child.material = material
             }
         })
     }
@@ -287,12 +283,7 @@ gui.add(firefliesMaterial.uniforms.uSize, 'value').min(0).max(500).step(1).name(
 gui.addColor(firefliesMaterial.uniforms.uColor, 'value').name('uColor');
 gui.add(firefliesMaterial.uniforms.uSpeed, 'value').min(0).max(0.1).step(0.001).name('uSpeed');
 
-
 scene.add(fireflies)
-
-// temporary funcitons 
-
-
 
 
 /**
@@ -324,19 +315,12 @@ window.addEventListener('resize', () => {
 
 // Base camera
 const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 3
-camera.position.y = .8
-camera.position.z = 1.6
-
-
-
+camera.position.set(3, 0.8, 1.6)
 camera.rotation.y = 1.225
 
 const cameraGroup = new THREE.Group()
-cameraGroup.add(camera)
-
 cameraGroup.position.y = .5
-
+cameraGroup.add(camera)
 scene.add(cameraGroup)
 
 gui.add(camera.position, 'x').min(- 100).max(100).step(0.001).name('cameraX')
@@ -370,26 +354,12 @@ renderer.setClearColor(debugObject.clearColor)
 
 // studio.initialize()
 
-
-
-// create project 
 const project = getProject('Shane project 2', { state: projectState })
 const sheet = project.sheet('Animated scene')
 const sequenceLength = val(sheet.sequence.pointer.length);
-window.addEventListener('click', () => {
-    console.log(sheet)
-    console.log(sequenceLength)
-    sheet.sequence.play({ iterationCount: Infinity })
-})
-
-window.addEventListener('dblclick', () => {
-
-    sheet.sequence.position = 0
-})
 
 const cameraObject = sheet.object('Camera', {
-    // Note that the rotation and position are in radians
-    // (full rotation: 2 * Math.PI)
+
     rotation: types.compound({
         x: types.number(camera.rotation.x, { range: [-2, 2] }),
         y: types.number(camera.rotation.y, { range: [-2, 2] }),
@@ -407,41 +377,186 @@ cameraObject.onValuesChange((values) => {
     camera.position.set(values.position.x, values.position.y, values.position.z)
 })
 
+/**
+ * ScrollTrigger + Lenis
+ */
 
-// console.log(projectState)
-let scrollPercentage = 0
-let transitionOne = document.getElementById('transition-one')
-function logScrollPercentage() {
-    // Calculate the scroll percentage
-    const scrollPosition = window.scrollY;
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.body.scrollHeight;
-    scrollPercentage = scrollPosition / (documentHeight - windowHeight);
-
-    // Log the scroll percentage
-    // console.log(`Scroll Percentage: ${scrollPercentage.toFixed(4)}`);
-    sheet.sequence.position = scrollPercentage * sequenceLength;
-
+// scroll to the top everytime the page refreshes
+window.onbeforeunload = function () {
+    window.scrollTo(0, 0);
 }
 
-// Attach the function to the scroll event
-window.addEventListener('scroll', logScrollPercentage);
+const lenis = new Lenis({ lerp: 0.1 })
+
+
+gsap.registerPlugin(ScrollTrigger);
 
 
 
+gsap.ticker.lagSmoothing(0)
+
+
+
+const tl = gsap.timeline();
+
+tl.to('.to-be-animated', {
+    opacity: 1,
+    duration: 2,
+    transform: "perspective(500px) translate3d(0px, 0px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale3d(1, 1, 1)",
+});
+
+tl.to('.to-be-animated', {
+    opacity: 1,
+});
+
+
+tl.from('.first-card', {
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black 100%, transparent 200%); mask-image: linear-gradient(270deg, black -100%, transparent 0%);',
+});
+
+
+tl.from('.second-card', {
+    cssText: '-webkit-mask-image: linear-gradient(90deg, black -100%, transparent 0%); mask-image: linear-gradient(90deg, black -100%, transparent 0%)'
+});
+tl.from('.third-card', {
+    cssText: '-webkit-mask-image: linear-gradient(90deg, black -100%, transparent 0%); mask-image: linear-gradient(90deg, black -100%, transparent 0%)'
+});
+
+
+// play the next two animations at the same time
+const nestedTl = gsap.timeline(); // Create a nested timeline
+
+nestedTl.to('.first-card', {
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);',
+});
+
+nestedTl.to('.second-card', {
+    cssText: '-webkit-mask-image: linear-gradient(90deg, black 100%, transparent 200%); mask-image: linear-gradient(90deg, black -100%, transparent 0%);',
+}, .1); // Set the position of this animation to 0, which means it starts at the same time as the previous animation
+
+tl.add(nestedTl); // Add the nested timeline to the main timeline
+
+// reset the rotation
+tl.to('.second-card', {
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black 100%, transparent 200%); mask-image: linear-gradient(270deg, black -100%, transparent 0%);'
+})
+
+const nestedT2 = gsap.timeline()
+
+
+
+nestedT2.to('.second-card', {
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);',
+})
+
+nestedT2.to('.third-card', {
+    cssText: '-webkit-mask-image: linear-gradient(90deg, black 100%, transparent 200%); mask-image: linear-gradient(90deg, black -100%, transparent 0%);',
+}, 0.1)
+
+tl.add(nestedT2)
+
+// reset third card rotation
+tl.to('.third-card', {
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black 100%, transparent 200%); mask-image: linear-gradient(270deg, black -100%, transparent 0%);'
+})
+
+// tl.to('.third-card', {
+//     cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);',
+// })
+
+tl.to('.to-be-animated', {
+    opacity: 0,
+    transform: "perspective(500px) translate3d(200px,200px, 200px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)",
+    pointerEvents: 'none',
+    duration: 1.2,
+});
+
+ScrollTrigger.create({
+    animation: tl,
+    trigger: '.text-animation',
+    start: 'top 70%',
+    end: '+=8000',
+    scrub: true,
+    // markers: true,
+});
+
+
+// page transition
+
+let pageTransitionTimeline = gsap.timeline()
+
+pageTransitionTimeline.to('.page-transition-one', {
+    opacity: 1,
+    boxShadow: "0px -500px 1000px 300px #02040c",
+
+})
+
+ScrollTrigger.create({
+    animation: pageTransitionTimeline,
+    trigger: '.transition-container',
+    start: '-=1000', // Adjusted start value to move 2000 pixels above the trigger
+    end: '+=1000',
+    scrub: true,
+});
+
+// text animation
+
+let textAnimation = gsap.timeline()
+
+textAnimation.from(
+
+    '.text-animation-reveal', {
+    userSelect: 'none',
+    cssText: '    -webkit-mask-image: linear-gradient(90deg, black -100%, transparent 0%); mask-image: linear-gradient(90deg, black -100%, transparent 0%)'
+}
+)
+textAnimation.to(
+    '.text-animation-reveal', {
+    userSelect: 'all',
+    cssText: '-webkit-mask-image: linear-gradient(90deg, black 100%, transparent 200%); mask-image: linear-gradient(90deg, black -100%, transparent 0%);'
+}
+)
+textAnimation.to(
+    '.text-animation-reveal', {
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black 100%, transparent 200%); mask-image: linear-gradient(270deg, black -100%, transparent 0%);'
+}
+)
+
+textAnimation.to(
+    '.text-animation-reveal', {
+    userSelect: 'none',
+    cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);'
+}
+)
+
+
+ScrollTrigger.create({
+    animation: textAnimation,
+    trigger: '.text-animation-trigger',
+    start: '-=800', // Adjusted start value to move 2000 pixels above the trigger
+    end: '+=2000',
+    scrub: true,
+    // markers: true
+})
+
+
+lenis.on('scroll', (e) => {
+    ScrollTrigger.update()
+    sheet.sequence.position = e.progress * sequenceLength;
+})
 /**
  * Animate
  */
+
+
+
 const clock = new THREE.Clock()
 
 const tick = (time) => {
 
-
     const elapsedTime = clock.getElapsedTime()
 
     lenis.raf(time)
-
-    console
 
     // Update materials
     firefliesMaterial.uniforms.uTime.value = elapsedTime
@@ -457,3 +572,5 @@ const tick = (time) => {
 }
 
 tick()
+
+

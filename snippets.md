@@ -241,3 +241,25 @@ ease: 'power2.inOut',
                 381
                 6553</p>
         </div> -->
+
+// create scroll trigger
+
+// ScrollTrigger.create({
+// trigger: '.text-animation',
+// start: 'top top',
+// end: 'bottom bottom',
+// markers: true,
+// scrub: true, // Enable scrubbing
+
+// });
+// gsap.to(".to-be-animated", {
+// opacity: 1,
+// transform: "perspective(500px) translate3d(0px, 0px, 0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale3d(1, 1, 1)",
+// scrollTrigger: {
+// trigger: ".text-animation",
+// start: "top 70%",
+// end: "bottom bottom",
+// scrub: true,
+// markers: true,
+// }
+// });
