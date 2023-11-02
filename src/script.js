@@ -150,11 +150,29 @@ material.roughness = 0.2
 material.envMap = environmentMapTexture
 
 
+
 const transparentMaterial = new THREE.MeshStandardMaterial()
-// transparentMaterial.color = new THREE.Color('#f9d71c')
+transparentMaterial.color = new THREE.Color('#ffffff')
 transparentMaterial.metalness = 0.9
-transparentMaterial.roughness = 0.1
+transparentMaterial.roughness = 0.147
 transparentMaterial.envMap = environmentMapTexture
+
+// add color to the transparent material to gui
+
+gui.addColor(transparentMaterial, 'color').name('transparentColor').onChange(() => {
+    transparentMaterial.needsUpdate = true
+})
+
+gui.add(transparentMaterial, 'metalness').min(0).max(1).step(0.001).name('transparentMetalness').onChange(() => {
+    transparentMaterial.needsUpdate = true
+}
+)
+
+gui.add(transparentMaterial, 'roughness').min(0).max(1).step(0.001).name('transparentRoughness').onChange(() => {
+    transparentMaterial.needsUpdate = true
+}
+)
+
 
 
 
@@ -162,24 +180,52 @@ transparentMaterial.envMap = environmentMapTexture
 /**
  * Model
  */
+let safeDoor, safeDoor2, secondGate;
 gltfLoader.load(
-    'testModelnew.glb',
+    '213.glb',
     (gltf) => {
+
+
+        safeDoor = gltf.scene.getObjectByName('safe-door-1')
+        safeDoor2 = gltf.scene.getObjectByName('safe-door-2')
+        secondGate = gltf.scene.getObjectByName('second-gate')
+
+
         gltf.scene.scale.set(0.1, 0.1, 0.1)
+
+        const gateObject = sheet.object('gate', {
+
+            position: types.compound({
+                x: types.number(secondGate.position.x, { range: [-100, 100] }),
+                y: types.number(secondGate.position.y, { range: [-100, 100] }),
+                z: types.number(secondGate.position.z, { range: [-100, 100] }),
+            }),
+        })
+
+        gateObject.onValuesChange((values) => {
+
+            secondGate.position.set(values.position.x, values.position.y, values.position.z)
+        })
+
+
         scene.add(gltf.scene)
 
-        gltf.scene.traverse((child) => {
-            if (child instanceof THREE.Mesh && child.name.startsWith('Cube')) {
-                child.material = material
+        console.log(secondGate)
 
-            } else if (child.name.startsWith('transparent')) {
+        // gltf.scene.traverse((child) => {
+        //     if (child instanceof THREE.Mesh && child.name.startsWith('Cube')) {
+        //         child.material = material
 
-                child.material = transparentMaterial
+        //     } else if (child.name.startsWith('transparent')) {
 
-            } else {
-                child.material = material
-            }
-        })
+        //         child.material = transparentMaterial
+
+        //     } else if (child.name.startsWith("ROBERT")) {
+        //         child.material = transparentMaterial
+        //     } else {
+        //         child.material = material
+        //     }
+        // })
     }
 )
 
@@ -197,7 +243,7 @@ scene.add(directionalLight)
 /**
  * Fog
  */
-const fog = new THREE.Fog('#ffffff', 1, 35)
+const fog = new THREE.Fog('#ffffff', 1, 55)
 scene.fog = fog
 
 
@@ -323,6 +369,12 @@ cameraGroup.position.y = .5
 cameraGroup.add(camera)
 scene.add(cameraGroup)
 
+
+const fovControl = gui.add(camera, 'fov', 1, 180).name('FOV');
+fovControl.onChange(() => {
+    camera.updateProjectionMatrix();
+});
+
 gui.add(camera.position, 'x').min(- 100).max(100).step(0.001).name('cameraX')
 gui.add(camera.position, 'y').min(- 100).max(100).step(0.001).name('cameraY')
 gui.add(camera.position, 'z').min(- 100).max(100).step(0.001).name('cameraZ')
@@ -377,6 +429,7 @@ cameraObject.onValuesChange((values) => {
     camera.position.set(values.position.x, values.position.y, values.position.z)
 })
 
+
 /**
  * ScrollTrigger + Lenis
  */
@@ -386,14 +439,15 @@ window.onbeforeunload = function () {
     window.scrollTo(0, 0);
 }
 
-const lenis = new Lenis({ lerp: 0.1 })
+const lenis = new Lenis({ lerp: 0.1, syncTouch: true, syncTouchLerp: true })
 
 
 gsap.registerPlugin(ScrollTrigger);
 
 
 
-gsap.ticker.lagSmoothing(0)
+// gsap.ticker.lagSmoothing(0)
+
 
 
 
@@ -645,6 +699,7 @@ landingPageTl.to('.content-wrapper', {
 })
 
 
+
 ScrollTrigger.create({
     trigger: '.landing-page-container',
     start: '+=3000',
@@ -652,15 +707,36 @@ ScrollTrigger.create({
     animation: landingPageTl,
     // markers: true,
     scrub: true,
+
 });
-
-
 
 
 lenis.on('scroll', (e) => {
     ScrollTrigger.update()
     sheet.sequence.position = e.progress * sequenceLength;
+
 })
+const fovTl = gsap.timeline();
+
+
+
+fovTl.to(camera, {
+    fov: 60,
+});
+
+ScrollTrigger.create({
+    trigger: '.fov-1',
+    start: '-=200',
+    end: '+=3000',
+    animation: fovTl,
+    scrub: true,
+    // markers: true,
+    onUpdate: () => {
+        camera.updateProjectionMatrix()
+    }
+});
+
+
 /**
  * Animate
  */
