@@ -13,6 +13,16 @@ import studio from '@theatre/studio'
 import projectState from './animation03.json'
 import Lenis from '@studio-freight/lenis'
 
+// post processing
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass'
+
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
+
+import { SobelOperatorShader } from 'three/examples/jsm/shaders/SobelOperatorShader'
+import { LuminosityShader } from 'three/examples/jsm/shaders/LuminosityShader'
+import { ColorifyShader } from 'three/examples/jsm/shaders/ColorifyShader'
 
 /**
  * Loaders
@@ -182,7 +192,7 @@ gui.add(transparentMaterial, 'roughness').min(0).max(1).step(0.001).name('transp
  */
 let safeDoor, safeDoor2, secondGate;
 gltfLoader.load(
-    '213.glb',
+    '12.glb',
     (gltf) => {
 
 
@@ -193,19 +203,19 @@ gltfLoader.load(
 
         gltf.scene.scale.set(0.1, 0.1, 0.1)
 
-        const gateObject = sheet.object('gate', {
+        // const gateObject = sheet.object('gate', {
 
-            position: types.compound({
-                x: types.number(secondGate.position.x, { range: [-100, 100] }),
-                y: types.number(secondGate.position.y, { range: [-100, 100] }),
-                z: types.number(secondGate.position.z, { range: [-100, 100] }),
-            }),
-        })
+        //     position: types.compound({
+        //         x: types.number(secondGate.position.x, { range: [-100, 100] }),
+        //         y: types.number(secondGate.position.y, { range: [-100, 100] }),
+        //         z: types.number(secondGate.position.z, { range: [-100, 100] }),
+        //     }),
+        // })
 
-        gateObject.onValuesChange((values) => {
+        // gateObject.onValuesChange((values) => {
 
-            secondGate.position.set(values.position.x, values.position.y, values.position.z)
-        })
+        //     secondGate.position.set(values.position.x, values.position.y, values.position.z)
+        // })
 
 
         scene.add(gltf.scene)
@@ -218,7 +228,7 @@ gltfLoader.load(
 
         //     } else if (child.name.startsWith('transparent')) {
 
-        //         child.material = transparentMaterial
+        //         // child.material = transparentMaterial
 
         //     } else if (child.name.startsWith("ROBERT")) {
         //         child.material = transparentMaterial
@@ -228,6 +238,8 @@ gltfLoader.load(
         // })
     }
 )
+
+
 
 
 
@@ -349,6 +361,10 @@ window.addEventListener('resize', () => {
     camera.aspect = sizes.width / sizes.height
     camera.updateProjectionMatrix()
 
+    // Update Post processing   
+    composer.setSize(sizes.width, sizes.height)
+
+
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -469,12 +485,7 @@ tl.from('.first-card', {
 });
 
 
-tl.from('.second-card', {
-    cssText: '-webkit-mask-image: linear-gradient(90deg, black -100%, transparent 0%); mask-image: linear-gradient(90deg, black -100%, transparent 0%)'
-});
-tl.from('.third-card', {
-    cssText: '-webkit-mask-image: linear-gradient(90deg, black -100%, transparent 0%); mask-image: linear-gradient(90deg, black -100%, transparent 0%)'
-});
+
 
 
 // play the next two animations at the same time
@@ -482,6 +493,9 @@ const nestedTl = gsap.timeline(); // Create a nested timeline
 
 nestedTl.to('.first-card', {
     cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);',
+});
+tl.from('.second-card', {
+    cssText: '-webkit-mask-image: linear-gradient(90deg, black -100%, transparent 0%); mask-image: linear-gradient(90deg, black -100%, transparent 0%)'
 });
 
 nestedTl.to('.second-card', {
@@ -502,6 +516,9 @@ const nestedT2 = gsap.timeline()
 nestedT2.to('.second-card', {
     cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);',
 })
+tl.from('.third-card', {
+    cssText: '-webkit-mask-image: linear-gradient(90deg, black -100%, transparent 0%); mask-image: linear-gradient(90deg, black -100%, transparent 0%)'
+});
 
 nestedT2.to('.third-card', {
     cssText: '-webkit-mask-image: linear-gradient(90deg, black 100%, transparent 200%); mask-image: linear-gradient(90deg, black -100%, transparent 0%);',
@@ -640,6 +657,24 @@ flashTl.to(
     cssText: '-webkit-mask-image: linear-gradient(270deg, black 100%, transparent 200%); mask-image: linear-gradient(270deg, black -100%, transparent 0%);'
 }
 )
+flashTl.to(camera, {
+    onUpdate: () => {
+        rendererType = false
+    }
+
+})
+
+// reset the fov
+flashTl.to(camera, {
+    fov: 50,
+    onUpdate: () => {
+        camera.updateProjectionMatrix()
+        rendererType = true
+    }
+    ,
+
+})
+
 flashTl.to(
     '.flash-card-1', {
     userSelect: 'none',
@@ -670,6 +705,8 @@ flashTl.to(
     cssText: '-webkit-mask-image: linear-gradient(270deg, black -80%, transparent 0%); mask-image: linear-gradient(270deg, black -80%, transparent 0%);'
 }
 )
+
+
 
 
 
@@ -721,13 +758,13 @@ const fovTl = gsap.timeline();
 
 
 fovTl.to(camera, {
-    fov: 60,
+    fov: 100,
 });
 
 ScrollTrigger.create({
     trigger: '.fov-1',
     start: '-=200',
-    end: '+=3000',
+    end: '+=10000',
     animation: fovTl,
     scrub: true,
     // markers: true,
@@ -735,6 +772,46 @@ ScrollTrigger.create({
         camera.updateProjectionMatrix()
     }
 });
+
+/**
+ * Post processing
+ */
+const composer = new EffectComposer(renderer);
+const renderPass = new RenderPass(scene, camera);
+
+
+
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(sizes.width, sizes.height), 1, 0.2, 0.1);
+
+
+const luminosityEffect = new ShaderPass(LuminosityShader);
+
+const sobelEffect = new ShaderPass(SobelOperatorShader);
+sobelEffect.uniforms["resolution"].value.x = sizes.width * window.devicePixelRatio;
+sobelEffect.uniforms["resolution"].value.y = sizes.height * window.devicePixelRatio;
+
+const colorify = new ShaderPass(ColorifyShader);
+colorify.uniforms["color"].value.setRGB(0.5, 0.5, 0.5);
+
+composer.addPass(renderPass);
+composer.addPass(luminosityEffect);
+composer.addPass(sobelEffect);
+composer.addPass(colorify);
+
+
+
+composer.addPass(bloomPass);
+
+
+
+let rendererType = false
+
+// window.addEventListener('click', () => {
+//     rendererType = !rendererType
+// })
+
+
+
 
 
 /**
@@ -747,6 +824,8 @@ const clock = new THREE.Clock()
 
 const tick = (time) => {
 
+
+
     const elapsedTime = clock.getElapsedTime()
 
     lenis.raf(time)
@@ -758,7 +837,12 @@ const tick = (time) => {
     // controls.update()
 
     // Render
-    renderer.render(scene, camera)
+    if (rendererType) {
+        composer.render();
+    } else {
+        renderer.render(scene, camera)
+    }
+
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
