@@ -10,7 +10,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { getProject, types, val } from '@theatre/core'
 import studio from '@theatre/studio'
-import projectState from './animation03.json'
+import projectState from './animation09.json'
 import Lenis from '@studio-freight/lenis'
 
 // post processing
@@ -190,9 +190,15 @@ gui.add(transparentMaterial, 'roughness').min(0).max(1).step(0.001).name('transp
 /**
  * Model
  */
+
+const lastTunnelTexture = textureLoader.load('baked.jpg')
+lastTunnelTexture.flipY = false
+const lastTunnelMaterial = new THREE.MeshStandardMaterial({ map: lastTunnelTexture })
+
+
 let safeDoor, safeDoor2, secondGate;
 gltfLoader.load(
-    '12.glb',
+    'reed.glb',
     (gltf) => {
 
 
@@ -222,6 +228,16 @@ gltfLoader.load(
 
         console.log(secondGate)
 
+
+        // apply texture to last tunnel its called last-tunnel
+        const lastTunnel = gltf.scene.getObjectByName('baked-tunnel')
+        console.log(lastTunnel)
+
+        lastTunnel.traverse((child) => {
+            console.log(child)
+            child.material = lastTunnelMaterial
+        }
+        )
         // gltf.scene.traverse((child) => {
         //     if (child instanceof THREE.Mesh && child.name.startsWith('Cube')) {
         //         child.material = material
@@ -429,14 +445,14 @@ const sequenceLength = val(sheet.sequence.pointer.length);
 const cameraObject = sheet.object('Camera', {
 
     rotation: types.compound({
-        x: types.number(camera.rotation.x, { range: [-2, 2] }),
-        y: types.number(camera.rotation.y, { range: [-2, 2] }),
+        x: types.number(camera.rotation.x, { range: [-20, 20] }),
+        y: types.number(camera.rotation.y, { range: [-20, 20] }),
         z: types.number(camera.rotation.z, { range: [-20, 20] }),
     }),
     position: types.compound({
-        x: types.number(camera.position.x, { range: [-100, 100] }),
-        y: types.number(camera.position.y, { range: [-100, 100] }),
-        z: types.number(camera.position.z, { range: [-100, 100] }),
+        x: types.number(camera.position.x, { range: [-200, 200] }),
+        y: types.number(camera.position.y, { range: [-200, 200] }),
+        z: types.number(camera.position.z, { range: [-200, 200] }),
     }),
 })
 
@@ -773,6 +789,25 @@ ScrollTrigger.create({
     }
 });
 
+// page transition
+
+let pageTransitionTwoTimeline = gsap.timeline()
+
+pageTransitionTwoTimeline.to('.page-transition-two', {
+    opacity: 1,
+    boxShadow: "0px -500px 1000px 400px #02040c",
+
+})
+
+ScrollTrigger.create({
+    animation: pageTransitionTwoTimeline,
+
+    start: '+=1000', // Adjusted start value to move 2000 pixels above the trigger
+    end: '+=2000',
+    scrub: true,
+});
+
+
 /**
  * Post processing
  */
@@ -781,7 +816,7 @@ const renderPass = new RenderPass(scene, camera);
 
 
 
-const bloomPass = new UnrealBloomPass(new THREE.Vector2(sizes.width, sizes.height), 1, 0.2, 0.1);
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(sizes.width, sizes.height), 1, 0.2, 0.01);
 
 
 const luminosityEffect = new ShaderPass(LuminosityShader);
@@ -793,6 +828,12 @@ sobelEffect.uniforms["resolution"].value.y = sizes.height * window.devicePixelRa
 const colorify = new ShaderPass(ColorifyShader);
 colorify.uniforms["color"].value.setRGB(0.5, 0.5, 0.5);
 
+const colorifyFolder = gui.addFolder('Colorify Effect');
+colorifyFolder.add(colorify.uniforms['color'].value, 'r', 0, 1).name('Red');
+colorifyFolder.add(colorify.uniforms['color'].value, 'g', 0, 1).name('Green');
+colorifyFolder.add(colorify.uniforms['color'].value, 'b', 0, 1).name('Blue');
+colorifyFolder.open();
+
 composer.addPass(renderPass);
 composer.addPass(luminosityEffect);
 composer.addPass(sobelEffect);
@@ -802,15 +843,27 @@ composer.addPass(colorify);
 
 composer.addPass(bloomPass);
 
+// Define parameters for GUI
+const bloomFolder = gui.addFolder('Bloom Pass');
+bloomFolder.add(bloomPass, 'strength', 0, 20).name('Strength');
+bloomFolder.add(bloomPass, 'radius', 0, 2).name('Radius');
+bloomFolder.add(bloomPass, 'threshold', 0, 1).name('Threshold');
+bloomFolder.open();
+
+gsap.to(bloomPass, {
+    strength: 2, // Target strength value
+    duration: 2, // Animation duration in seconds
+    repeat: -1, // Infinite repeat
+    yoyo: true,
+    ease: 'power1.inOut',
+});
 
 
 let rendererType = false
 
-// window.addEventListener('click', () => {
-//     rendererType = !rendererType
-// })
-
-
+window.addEventListener('click', () => {
+    rendererType = !rendererType
+})
 
 
 
