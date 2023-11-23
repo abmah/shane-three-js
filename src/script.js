@@ -10,7 +10,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { getProject, types, val } from '@theatre/core'
 import studio from '@theatre/studio'
-import projectState from './animation09.json'
+import projectState from './animation11.json'
 import Lenis from '@studio-freight/lenis'
 
 // post processing
@@ -196,9 +196,14 @@ lastTunnelTexture.flipY = false
 const lastTunnelMaterial = new THREE.MeshStandardMaterial({ map: lastTunnelTexture })
 
 
+const initTexture = textureLoader.load('init2.jpg')
+initTexture.flipY = false
+const initMaterial = new THREE.MeshStandardMaterial({ map: initTexture })
+
+
 let safeDoor, safeDoor2, secondGate;
 gltfLoader.load(
-    'reed.glb',
+    'init.glb',
     (gltf) => {
 
 
@@ -231,13 +236,21 @@ gltfLoader.load(
 
         // apply texture to last tunnel its called last-tunnel
         const lastTunnel = gltf.scene.getObjectByName('baked-tunnel')
-        console.log(lastTunnel)
+
 
         lastTunnel.traverse((child) => {
-            console.log(child)
             child.material = lastTunnelMaterial
         }
         )
+
+        const initScene = gltf.scene.getObjectByName('init')
+
+        initScene.traverse((child) => {
+            child.material = initMaterial
+        }
+        )
+
+
         // gltf.scene.traverse((child) => {
         //     if (child instanceof THREE.Mesh && child.name.startsWith('Cube')) {
         //         child.material = material
@@ -392,7 +405,7 @@ window.addEventListener('resize', () => {
  */
 
 // Base camera
-const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 100)
+const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height, 0.1, 150)
 camera.position.set(3, 0.8, 1.6)
 camera.rotation.y = 1.225
 
@@ -478,7 +491,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 
 
-// gsap.ticker.lagSmoothing(0)
+gsap.ticker.lagSmoothing(0)
 
 
 
@@ -793,17 +806,32 @@ ScrollTrigger.create({
 
 let pageTransitionTwoTimeline = gsap.timeline()
 
+
+
 pageTransitionTwoTimeline.to('.page-transition-two', {
     opacity: 1,
     boxShadow: "0px -500px 1000px 400px #02040c",
 
 })
+pageTransitionTwoTimeline.to(camera, {
+    onUpdate: () => {
+        rendererType = true
+    }
+
+})
+pageTransitionTwoTimeline.to(camera, {
+    onUpdate: () => {
+        rendererType = false
+    }
+
+})
+
 
 ScrollTrigger.create({
     animation: pageTransitionTwoTimeline,
-
-    start: '+=1000', // Adjusted start value to move 2000 pixels above the trigger
-    end: '+=2000',
+    trigger: '.page-transition-two',
+    start: '-=1000',
+    end: '+=2500',
     scrub: true,
 });
 
@@ -861,9 +889,9 @@ gsap.to(bloomPass, {
 
 let rendererType = false
 
-window.addEventListener('click', () => {
-    rendererType = !rendererType
-})
+// window.addEventListener('click', () => {
+//     rendererType = !rendererType
+// })
 
 
 
