@@ -196,14 +196,14 @@ lastTunnelTexture.flipY = false
 const lastTunnelMaterial = new THREE.MeshStandardMaterial({ map: lastTunnelTexture })
 
 
-const initTexture = textureLoader.load('init2.jpg')
+const initTexture = textureLoader.load('43.jpg')
 initTexture.flipY = false
-const initMaterial = new THREE.MeshStandardMaterial({ map: initTexture })
+const initMaterial = new THREE.MeshStandardMaterial({ map: initTexture, envMap: environmentMapTexture, metalness: 0.1, roughness: 0.1 })
 
 
 let safeDoor, safeDoor2, secondGate;
 gltfLoader.load(
-    'init.glb',
+    '66.glb',
     (gltf) => {
 
 
@@ -246,7 +246,10 @@ gltfLoader.load(
         const initScene = gltf.scene.getObjectByName('init')
 
         initScene.traverse((child) => {
-            child.material = initMaterial
+            child.traverse((child) => {
+
+                child.material = initMaterial
+            })
         }
         )
 
@@ -438,8 +441,11 @@ gui.add(camera.rotation, 'z').min(- Math.PI).max(Math.PI).step(0.001).name('came
  */
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
-    antialias: true
+    antialias: true,
+
 })
+
+
 renderer.outputEncoding = THREE.sRGBEncoding
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
