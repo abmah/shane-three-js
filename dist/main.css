@@ -204,7 +204,7 @@ p {
 
 .loader-background {
     position: absolute;
-    height: 400px;
+    height: 500px;
     object-fit: cover;
     z-index: 1;
 
@@ -291,6 +291,7 @@ a:hover {
     cursor: pointer;
     transition: color 0.2s ease-in-out;
     opacity: 0;
+    text-wrap: nowrap;
 
 }
 
@@ -526,12 +527,24 @@ a:hover {
 
 .btn-primary {
     width: 212px;
-    height: 53px;
+
     font-size: 20px;
     font-style: normal;
-    margin-top: 30px;
+
     opacity: 0;
 
+}
+
+.btn-header {
+
+    width: 142px;
+    height: 40px;
+    font-size: 16px;
+}
+
+.header-links ul {
+    display: flex;
+    align-items: center;
 }
 
 .hero-title {
@@ -845,6 +858,8 @@ a:hover {
     padding: 30px;
     transition: opacity .3s ease;
     border-radius: 10px;
+    pointer-events: all !important;
+
 }
 
 .x-icon {
@@ -862,9 +877,8 @@ a:hover {
 }
 
 .hidden {
-
     opacity: 0;
-    pointer-events: none;
+    pointer-events: none !important;
 }
 
 .email-input {
@@ -1109,6 +1123,10 @@ a:hover {
         line-height: 24px;
     }
 
+    ul {
+        gap: 10px;
+    }
+
 }
 
 @media (max-width:370px) {
@@ -1212,9 +1230,10 @@ a:hover {
 
 
     .btn-primary {
-        width: 180px;
-        height: 45px;
+        width: 104px;
+        height: 33px;
         font-size: 16px;
+        text-wrap: nowrap;
     }
 
     .cards-wrapper {

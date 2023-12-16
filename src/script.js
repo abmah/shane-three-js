@@ -34,6 +34,7 @@ let isAnimating = false;
 const flipQueue = [];
 
 function processFlipQueue() {
+    // console.log(flipQueue);
     if (!isAnimating && flipQueue.length > 0) {
         isAnimating = true;
         if (flipQueue.length > 1) {
@@ -51,15 +52,16 @@ function processFlipQueue() {
             counterHidden.style.transition = 'transform .7s cubic-bezier(0.77, 0, 0.175, 1)';
             loaderText.style.transform = 'translateY(200%)';
             loaderText.style.transition = 'transform .4s cubic-bezier(0.77, 0, 0.175, 1)';
-        }, 500);
+        }, 1500);
         setTimeout(() => {
             loader.style.transform = 'translateY(-100%)';
             loader.style.transition = 'transform .5s cubic-bezier(0.77, 0, 0.175, 1)';
-        }, 1000);
+        }, 2000);
         playHtmlAnimations()
 
     }
 }
+
 
 const loadingManager = new THREE.LoadingManager(
     () => { },
@@ -85,9 +87,12 @@ const gltfLoader = new GLTFLoader(loadingManager)
 gltfLoader.setDRACOLoader(dracoLoader)
 
 
+
 /**
  * HTML animations
  */
+
+
 
 const aboutLink = document.querySelector('.about-link');
 const logo = document.querySelector('.logo');
@@ -99,9 +104,10 @@ const heroSub2 = document.querySelector('.hero-sub-2');
 const heroSub3 = document.querySelector('.hero-sub-3');
 const logoOverlay = document.querySelector('.logo-overlay');
 const card = document.querySelectorAll('.card');
-
+const backgroundLogo = document.querySelector('.loader-background');
 
 function playHtmlAnimations() {
+
 
     aboutLink.style.animation = 'fadein 1s ease-in-out forwards';
     logo.style.animation = 'fadein 1s ease-in-out 1s forwards';
@@ -116,6 +122,9 @@ function playHtmlAnimations() {
     card[0].style.animation = 'fadeinslideup 1s ease-in-out 1.8s forwards';
     card[1].style.animation = 'fadeinslideup 1s ease-in-out 1.6s forwards';
     card[2].style.animation = 'fadeinslideup 1s ease-in-out 1.9s forwards';
+    setTimeout(() => {
+        backgroundLogo.remove();
+    }, 5000);
 
 }
 
@@ -140,6 +149,16 @@ const scene = new THREE.Scene()
 /**
  * Textures
  */
+
+/**
+ * Model
+ */
+
+
+/**
+ * Materials
+ */
+
 const environmentMapTexture = cubeTextureLoader.load([
     '/environmentMaps/0/px.jpg',
     '/environmentMaps/0/nx.jpg',
@@ -149,125 +168,83 @@ const environmentMapTexture = cubeTextureLoader.load([
     '/environmentMaps/0/nz.jpg'
 ])
 
-/**
- * Materials
- */
-
-const material = new THREE.MeshStandardMaterial()
-material.metalness = 0.7
-material.roughness = 0.2
-
-material.envMap = environmentMapTexture
-
-
-
-const transparentMaterial = new THREE.MeshStandardMaterial()
-transparentMaterial.color = new THREE.Color('#ffffff')
-transparentMaterial.metalness = 0.9
-transparentMaterial.roughness = 0.147
-transparentMaterial.envMap = environmentMapTexture
-
-// add color to the transparent material to gui
-
-gui.addColor(transparentMaterial, 'color').name('transparentColor').onChange(() => {
-    transparentMaterial.needsUpdate = true
-})
-
-gui.add(transparentMaterial, 'metalness').min(0).max(1).step(0.001).name('transparentMetalness').onChange(() => {
-    transparentMaterial.needsUpdate = true
-}
-)
-
-gui.add(transparentMaterial, 'roughness').min(0).max(1).step(0.001).name('transparentRoughness').onChange(() => {
-    transparentMaterial.needsUpdate = true
-}
-)
 
 
 
 
+const transparentMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color('#ffffff'), metalness: .5, roughness: 0, envMap: environmentMapTexture })
 
-/**
- * Model
- */
-
-const lastTunnelTexture = textureLoader.load('baked.jpg')
-lastTunnelTexture.flipY = false
-const lastTunnelMaterial = new THREE.MeshStandardMaterial({ map: lastTunnelTexture })
+gui.addColor(transparentMaterial, 'color').name('transparentColor').onChange(() => { transparentMaterial.needsUpdate = true })
+gui.add(transparentMaterial, 'metalness').min(0).max(1).step(0.001).name('transparentMetalness').onChange(() => { transparentMaterial.needsUpdate = true })
+gui.add(transparentMaterial, 'roughness').min(0).max(1).step(0.001).name('transparentRoughness').onChange(() => { transparentMaterial.needsUpdate = true })
 
 
-const initTexture = textureLoader.load('43.jpg')
+
+
+const initTexture = textureLoader.load('d2d2.jpg')
+initTexture.encoding = THREE.sRGBEncoding
 initTexture.flipY = false
-const initMaterial = new THREE.MeshStandardMaterial({ map: initTexture, envMap: environmentMapTexture, metalness: 0.1, roughness: 0.1 })
+const initMaterial = new THREE.MeshBasicMaterial({ map: initTexture })
 
 
-let safeDoor, safeDoor2, secondGate;
+const tunnelTexture = textureLoader.load('painted-full.jpg')
+tunnelTexture.encoding = THREE.sRGBEncoding
+tunnelTexture.flipY = false
+const tunnelMaterial = new THREE.MeshBasicMaterial({ map: tunnelTexture })
+
+
+
+
+const goldMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color('#f9d71c'), envMap: environmentMapTexture, metalness: 0.806, roughness: 0.01, })
+
+
+
+
+
+// create emmisive white material 
+const emmisiveWhiteMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color('#ffffff'), metalness: .5, roughness: 0, emissive: new THREE.Color('#ffffff'), emissiveIntensity: 1, envMap: environmentMapTexture })
+
+// create shiny black material
+const shinyBlackMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color('#111111'), metalness: .5, roughness: 0, envMap: environmentMapTexture })
+
+
 gltfLoader.load(
-    '66.glb',
+    'model.glb',
     (gltf) => {
 
 
-        safeDoor = gltf.scene.getObjectByName('safe-door-1')
-        safeDoor2 = gltf.scene.getObjectByName('safe-door-2')
-        secondGate = gltf.scene.getObjectByName('second-gate')
 
 
         gltf.scene.scale.set(0.1, 0.1, 0.1)
 
-        // const gateObject = sheet.object('gate', {
-
-        //     position: types.compound({
-        //         x: types.number(secondGate.position.x, { range: [-100, 100] }),
-        //         y: types.number(secondGate.position.y, { range: [-100, 100] }),
-        //         z: types.number(secondGate.position.z, { range: [-100, 100] }),
-        //     }),
-        // })
-
-        // gateObject.onValuesChange((values) => {
-
-        //     secondGate.position.set(values.position.x, values.position.y, values.position.z)
-        // })
-
-
         scene.add(gltf.scene)
 
-        console.log(secondGate)
 
-
-        // apply texture to last tunnel its called last-tunnel
-        const lastTunnel = gltf.scene.getObjectByName('baked-tunnel')
-
-
-        lastTunnel.traverse((child) => {
-            child.material = lastTunnelMaterial
-        }
-        )
 
         const initScene = gltf.scene.getObjectByName('init')
-
+        console.log(initScene)
         initScene.traverse((child) => {
-            child.traverse((child) => {
+            child.material = initMaterial
 
-                child.material = initMaterial
-            })
-        }
-        )
+        })
+        // initScene.material = initMaterial
+
+        const whiteBitcoinAndHandle = gltf.scene.getObjectByName('white-bitcoin-handle')
+        whiteBitcoinAndHandle.material = emmisiveWhiteMaterial
+
+        const whiteBitcoins = gltf.scene.getObjectByName('bitcoin022')
+        whiteBitcoins.material = emmisiveWhiteMaterial
+
+        const blackBitcoinAndHandle = gltf.scene.getObjectByName('black-bitcoin-handle')
+        blackBitcoinAndHandle.material = shinyBlackMaterial
+
+        const bitcoinLogos = gltf.scene.getObjectByName('Cube029')
+        bitcoinLogos.material = tunnelMaterial
 
 
-        // gltf.scene.traverse((child) => {
-        //     if (child instanceof THREE.Mesh && child.name.startsWith('Cube')) {
-        //         child.material = material
 
-        //     } else if (child.name.startsWith('transparent')) {
 
-        //         // child.material = transparentMaterial
 
-        //     } else if (child.name.startsWith("ROBERT")) {
-        //         child.material = transparentMaterial
-        //     } else {
-        //         child.material = material
-        //     }
-        // })
     }
 )
 
@@ -275,11 +252,11 @@ gltfLoader.load(
 
 
 
-//ambiant light
+
 const ambiantLight = new THREE.AmbientLight(0xffffff, .1)
 scene.add(ambiantLight)
 
-// directional light
+
 const directionalLight = new THREE.DirectionalLight(0xfff8, 0.5)
 directionalLight.position.set(0.25, 3, -2.25)
 scene.add(directionalLight)
@@ -287,7 +264,7 @@ scene.add(directionalLight)
 /**
  * Fog
  */
-const fog = new THREE.Fog('#ffffff', 1, 55)
+const fog = new THREE.Fog('#ffffff', 1, 125)
 scene.fog = fog
 
 
@@ -792,21 +769,21 @@ const fovTl = gsap.timeline();
 
 
 
-fovTl.to(camera, {
-    fov: 100,
-});
+// fovTl.to(camera, {
+//     fov: 100,
+// });
 
-ScrollTrigger.create({
-    trigger: '.fov-1',
-    start: '-=200',
-    end: '+=10000',
-    animation: fovTl,
-    scrub: true,
-    // markers: true,
-    onUpdate: () => {
-        camera.updateProjectionMatrix()
-    }
-});
+// ScrollTrigger.create({
+//     trigger: '.fov-1',
+//     start: '-=200',
+//     end: '+=10000',
+//     animation: fovTl,
+//     scrub: true,
+//     // markers: true,
+//     onUpdate: () => {
+//         camera.updateProjectionMatrix()
+//     }
+// });
 
 // page transition
 
